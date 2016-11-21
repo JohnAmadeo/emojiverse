@@ -1,8 +1,8 @@
 from flask import Flask, request
 import json 
 import requests
-import textocr
-import ballotreader
+# import textocr
+# import ballotreader
 
 app = Flask(__name__)
 
