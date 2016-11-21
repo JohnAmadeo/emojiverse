@@ -28,6 +28,7 @@ block_blob_service = None
 #     emojify('https://scontent.xx.fbcdn.net/v/t35.0-12/15127522_10207695068084053_680510935_o.jpg?_nc_ad=z-m&oh=4373301dd2df31f5d20c0fbe4f98aac4&oe=58354252')
 
 def emojify(urlImage):
+    pushToCloud('./results/user_image.png')
     faceList = analyze_face(urlImage, 'prod')
     filename = draw_emoji(urlImage, faceList)
     return filename
@@ -129,10 +130,10 @@ def draw_emoji(urlImage, faceList):
         for c in range(0,3):
             img[yfrom:yto,xfrom:xto,c] = emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,c] * (emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,3]/255.0) + img[yfrom:yto,xfrom:xto,c] * (1.0 - emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,3]/255.0)
 
-    cv2.imwrite('./tmp/result.png', img)
-    pushToCloud('./tmp/result.png')
+    cv2.imwrite('/tmp/result.png', img)
+    pushToCloud('/tmp/result.png')
 
-    return './tmp/result.png'
+    return '/tmp/result.png'
 
 # Helper functions
 def processImgRequest(json, url, data, headers, params):
