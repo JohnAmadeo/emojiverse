@@ -20,7 +20,7 @@ _urlImgAPI = 'https://api.projectoxford.ai/emotion/v1.0/recognize'
 _imgKey = '56abb73c70d649c395df24fe8c5f0d01'
 # _vidKey = '6d733f1bc1e14010ac21969564926a56'
 _maxNumRetries = 10
-_filename = 'user_image.png'
+# _filename = 'user_image.png'
 _blobAddress = 'https://emojiverse2.blob.core.windows.net/imgstore/'
 block_blob_service = None
 

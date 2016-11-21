@@ -1,6 +1,7 @@
 from flask import Flask, request
 import json 
 import requests
+import sys
 from face_labeler import emojify
 
 app = Flask(__name__)
@@ -30,10 +31,13 @@ def handle_verification():
 @app.route('/', methods=['POST'])
 def handle_message():
     print "Handling Messages"
+    sys.stdout.flush()
     payload = request.get_data()
     for sender, imageurl in messaging_events(payload):
         print "Incoming from %s: %s" % (sender, imageurl)
         emojiurl = emojify(imageurl) 
+        print "Retrieving emojified url"
+        sys.stdout.flush()
         send_message(PAT, sender, emojiurl)
 
     return "ok"
