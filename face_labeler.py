@@ -128,7 +128,7 @@ def draw_emoji(urlImage, faceList):
 
     image_path = 'results/' + str(uuid.uuid4()) + '.jpg'
     cv2.imwrite(image_path, img)
-    print(image_path)
+    print image_path
 
     return image_path
 
