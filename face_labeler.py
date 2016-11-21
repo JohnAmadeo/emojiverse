@@ -28,7 +28,7 @@ def main():
     emojify('https://scontent.xx.fbcdn.net/v/t35.0-12/15127522_10207695068084053_680510935_o.jpg?_nc_ad=z-m&oh=4373301dd2df31f5d20c0fbe4f98aac4&oe=58354252')
 
 def emojify(urlImage):
-    pushToCloud('./results/user_image.png', 'png')
+    # pushToCloud('./results/user_image.png', 'png')
     faceList = analyze_face(urlImage, 'prod')
     filename = draw_emoji(urlImage, faceList)
     return filename
@@ -133,9 +133,9 @@ def draw_emoji(urlImage, faceList):
     # cv2.imshow("asdf", img)
     # cv2.waitKey(0)
     cv2.imwrite('/tmp/result.jpg', img)
-    pushToCloud('/tmp/result.jpg', 'jpg')
+    cloudPath = pushToCloud('/tmp/result.jpg', 'jpg')
 
-    return '/tmp/result.png'
+    return cloudPath
 
 # Helper functions
 def processImgRequest(json, url, data, headers, params):
@@ -210,12 +210,17 @@ def pushToCloud(localPath, imgFormat):
     block_blob_service.set_container_acl('imgstore', 
                                          public_access=PublicAccess.Container)
 
+    cloudPath = 'img' + str(uuid.uuid4()) + '.' + imgFormat
+
     block_blob_service.create_blob_from_path(
         'imgstore',
-        'img' + str(uuid.uuid4()) + '.' + imgFormat,
+        cloudPath,
         localPath,
         content_settings=ContentSettings(content_type='image/' + imgFormat)
     )
+
+    return cloudPath
+
 
 if __name__ == "__main__":
     main()

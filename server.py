@@ -33,8 +33,8 @@ def handle_message():
     payload = request.get_data()
     for sender, imageurl in messaging_events(payload):
         print "Incoming from %s: %s" % (sender, imageurl)
-        emojified_image_path = emojify(imageurl) 
-        send_message(PAT, sender, imageurl)
+        emojiurl = emojify(imageurl) 
+        send_message(PAT, sender, emojiurl)
 
     return "ok"
 
@@ -65,11 +65,26 @@ def send_message(token, recipient, imageurl):
     Send the message text to recipient with id recipient.
     """
 
+    # r = requests.post("https://graph.facebook.com/v2.6/me/messages",
+    #     params = {"access_token": token},
+    #     data=json.dumps({
+    #         "recipient": {"id": recipient},
+    #         "message": {"text": imageurl.decode('unicode_escape')}
+    #     }),
+    #     headers={'Content-type': 'application/json'})
+
     r = requests.post("https://graph.facebook.com/v2.6/me/messages",
         params = {"access_token": token},
         data=json.dumps({
             "recipient": {"id": recipient},
-            "message": {"text": imageurl.decode('unicode_escape')}
+            "message": {
+                "attachment": {
+                    "type":"image",
+                    "payload": {
+                        "url": imageurl.decode('unicode_escape')
+                    }
+                }
+            }
         }),
         headers={'Content-type': 'application/json'})
 
