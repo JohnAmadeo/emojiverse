@@ -1,8 +1,7 @@
 from flask import Flask, request
 import json 
 import requests
-# import textocr
-# import ballotreader
+from face_labeler import emojify
 
 app = Flask(__name__)
 
@@ -30,15 +29,12 @@ def handle_verification():
 # Read more at: https://developers.facebook.com/docs/graph-api/webhooks
 @app.route('/', methods=['POST'])
 def handle_message():
-    # print("Handling Messages")
-    print "Handling Messages"
+    print("Handling Messages")
     payload = request.get_data()
     for sender, imageurl in messaging_events(payload):
         print("Incoming from %s: %s" % (sender, imageurl))
+        emojified_image_path = emojify(imageurl) 
         send_message(PAT, sender, imageurl)
-        
-        # ballotreader.read_ballot(imageurl, 2)
-        # textocr.extract_text('./clean_image.jpg')
 
     return "ok"
 
@@ -49,8 +45,6 @@ def messaging_events(payload):
     """
 
     # convert JSON to python object
-    print(type(payload))
-    print(type(payload))
     data = json.loads(payload)
 
     # extract image URL for further processing if message is an image
