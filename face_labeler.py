@@ -16,12 +16,12 @@ import uuid
 
 # Variables
 _urlImgAPI = 'https://api.projectoxford.ai/emotion/v1.0/recognize'
-_urlVidAPI = 'https://api.projectoxford.ai/emotion/v1.0/recognizeinvideo'
+# _urlVidAPI = 'https://api.projectoxford.ai/emotion/v1.0/recognizeinvideo'
 _imgKey = '56abb73c70d649c395df24fe8c5f0d01'
-_vidKey = '6d733f1bc1e14010ac21969564926a56'
+# _vidKey = '6d733f1bc1e14010ac21969564926a56'
 _maxNumRetries = 10
 _filename = 'user_image.png'
-_cloudPath = 'https://emojiverse2.blob.core.windows.net/imgstore/img'
+_blobAddress = 'https://emojiverse2.blob.core.windows.net/imgstore/'
 block_blob_service = None
 
 def main():
@@ -57,11 +57,8 @@ def draw_emoji(urlImage, faceList):
                         dtype=np.uint8)
     img = cv2.imdecode(imgArr, 1)
 
-    # img = cv2.imread('./user_image.png')
     b, g, r = cv2.split(img)
-
     a = np.ones((img.shape[0], img.shape[1])).astype(np.uint8) #creating a dummy alpha channel image.
-
     img = cv2.merge((b, g, r, a))
 
     for face in faceList:
@@ -135,7 +132,7 @@ def draw_emoji(urlImage, faceList):
     cv2.imwrite('/tmp/result.jpg', img)
     cloudPath = pushToCloud('/tmp/result.jpg', 'jpg')
 
-    return cloudPath
+    return _blobAddress + cloudPath
 
 # Helper functions
 def processImgRequest(json, url, data, headers, params):
@@ -218,7 +215,7 @@ def pushToCloud(localPath, imgFormat):
         localPath,
         content_settings=ContentSettings(content_type='image/' + imgFormat)
     )
-
+     
     return cloudPath
 
 
