@@ -2,15 +2,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 from get_emoji import get_emoji
-from azure.storage.blob import BlockBlobService
-from azure.storage.blob import PublicAccess
-from azure.storage.blob import ContentSettings
 import time 
 import requests
 import cv2
 import operator
 import numpy as np 
-import matplotlib.pyplot as plt
 import base64
 import time
 import uuid
@@ -181,47 +177,6 @@ def processImgRequest(json, url, data, headers, params):
 
     return result
 
-def processVidOpRequest(json, url, data, headers, params):
-    retries = 0
-    result = None
-
-    while True:
-        # get response
-        resp = requests.request('post', url=url,
-                                    json=json, data=data, 
-                                    headers=headers, params=params)
-        
-        # fields
-        lenf = 'content-length'
-        typef = 'content-type'
-
-        # rate limit exceeded
-        if resp.status_code == 429:
-            print("Message: %s" % (resp.json()['error']['message']))
-
-            if retries <= _maxNumRetries:
-                time.sleep(1)
-                retries += 1
-                continue
-            else:
-                print('Error: failed after retrying!')
-                break
-
-        # successful call
-        elif resp.status_code == 202:
-            result = resp.headers['operation-location']
-            # print("header", resp.headers, "json", resp.json, "content", resp.content)
-
-        else:
-            print("Error code: %d" % (resp.status_code))
-            print("Message: %s" % (resp.json()['error']['message']))
-
-        break
-
-    return result
-
-# def processVidRecogRequest(json, url, data, headers, params):
-
 def drawFace(result, img):
     for face in result:
         faceRect = face['faceRectangle']
@@ -242,22 +197,6 @@ def drawFace(result, img):
                                        cv2.FONT_HERSHEY_SIMPLEX,
                                        0.5, (255,0,0), 1)
 
-def pushToCloud(localPath, numPics):
-    global block_blob_service
-    block_blob_service = BlockBlobService(account_name='emojiverse2',
-        account_key='bsLnZdnBz5yppDuprvDNlnWNNLAFl4y6vcOiIz23NozQwLIqJQ12AYkqISdc/WyHVV4HYtGv+Y4b25q2JbmN5A==')
-
-    block_blob_service.set_container_acl('imgstore', 
-                                         public_access=PublicAccess.Container)
-
-    block_blob_service.create_blob_from_path(
-        'imgstore',
-        'img' + str(numPics) + '.png',
-        _filename,
-        content_settings=ContentSettings(content_type='image/png')
-    )
-
-    return 0
 
 # if __name__ == "__main__":
 #     main()
