@@ -37,8 +37,8 @@ def handle_message():
         print("Incoming from %s: %s" % (sender, imageurl))
         send_message(PAT, sender, imageurl)
         
-        ballotreader.read_ballot(imageurl, 2)
-        textocr.extract_text('./clean_image.jpg')
+        # ballotreader.read_ballot(imageurl, 2)
+        # textocr.extract_text('./clean_image.jpg')
 
     return "ok"
 
