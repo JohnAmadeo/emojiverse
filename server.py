@@ -77,6 +77,9 @@ def send_message(token, recipient, imageurl):
     #     }),
     #     headers={'Content-type': 'application/json'})
 
+    print "url w/ decode: %s." % imageurl.decode('unicode_escape')
+    sys.stdout.flush()
+
     r = requests.post("https://graph.facebook.com/v2.6/me/messages",
         params = {"access_token": token},
         data=json.dumps({
@@ -85,7 +88,7 @@ def send_message(token, recipient, imageurl):
                 "attachment": {
                     "type":"image",
                     "payload": {
-                        "url": imageurl.decode('unicode_escape')
+                        "url": imageurl#.decode('unicode_escape')
                     }
                 }
             }
