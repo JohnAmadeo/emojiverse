@@ -24,11 +24,11 @@ _filename = 'user_image.png'
 _cloudPath = 'https://emojiverse2.blob.core.windows.net/imgstore/img'
 block_blob_service = None
 
-# def main():
-#     emojify('https://scontent.xx.fbcdn.net/v/t35.0-12/15127522_10207695068084053_680510935_o.jpg?_nc_ad=z-m&oh=4373301dd2df31f5d20c0fbe4f98aac4&oe=58354252')
+def main():
+    emojify('https://scontent.xx.fbcdn.net/v/t35.0-12/15127522_10207695068084053_680510935_o.jpg?_nc_ad=z-m&oh=4373301dd2df31f5d20c0fbe4f98aac4&oe=58354252')
 
 def emojify(urlImage):
-    pushToCloud('./results/user_image.png')
+    pushToCloud('./results/user_image.png', 'png')
     faceList = analyze_face(urlImage, 'prod')
     filename = draw_emoji(urlImage, faceList)
     return filename
@@ -130,8 +130,10 @@ def draw_emoji(urlImage, faceList):
         for c in range(0,3):
             img[yfrom:yto,xfrom:xto,c] = emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,c] * (emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,3]/255.0) + img[yfrom:yto,xfrom:xto,c] * (1.0 - emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,3]/255.0)
 
-    cv2.imwrite('/tmp/result.png', img)
-    pushToCloud('/tmp/result.png')
+    # cv2.imshow("asdf", img)
+    # cv2.waitKey(0)
+    cv2.imwrite('/tmp/result.jpg', img)
+    pushToCloud('/tmp/result.jpg', 'jpg')
 
     return '/tmp/result.png'
 
@@ -200,7 +202,7 @@ def drawFace(result, img):
                                        cv2.FONT_HERSHEY_SIMPLEX,
                                        0.5, (255,0,0), 1)
 
-def pushToCloud(localPath):
+def pushToCloud(localPath, imgFormat):
     global block_blob_service
     block_blob_service = BlockBlobService(account_name='emojiverse2',
         account_key='bsLnZdnBz5yppDuprvDNlnWNNLAFl4y6vcOiIz23NozQwLIqJQ12AYkqISdc/WyHVV4HYtGv+Y4b25q2JbmN5A==')
@@ -210,10 +212,10 @@ def pushToCloud(localPath):
 
     block_blob_service.create_blob_from_path(
         'imgstore',
-        'img' + str(uuid.uuid4()) + '.png',
+        'img' + str(uuid.uuid4()) + '.' + imgFormat,
         localPath,
-        content_settings=ContentSettings(content_type='image/png')
+        content_settings=ContentSettings(content_type='image/' + imgFormat)
     )
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
