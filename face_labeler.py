@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 from get_emoji import get_emoji
+from azure.storage.blob import BlockBlobService
+from azure.storage.blob import PublicAccess
+from azure.storage.blob import ContentSettings
 import time 
 import requests
 import cv2
@@ -126,11 +129,10 @@ def draw_emoji(urlImage, faceList):
         for c in range(0,3):
             img[yfrom:yto,xfrom:xto,c] = emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,c] * (emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,3]/255.0) + img[yfrom:yto,xfrom:xto,c] * (1.0 - emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,3]/255.0)
 
-    image_path = 'results/' + str(uuid.uuid4()) + '.jpg'
-    cv2.imwrite(image_path, img)
-    print (image_path)
+    cv2.imwrite('/tmp/result.png', img)
+    pushToCloud('/tmp/result.png')
 
-    return image_path
+    return '/tmp/result.png'
 
 # Helper functions
 def processImgRequest(json, url, data, headers, params):
@@ -197,6 +199,20 @@ def drawFace(result, img):
                                        cv2.FONT_HERSHEY_SIMPLEX,
                                        0.5, (255,0,0), 1)
 
+def pushToCloud(localPath):
+    global block_blob_service
+    block_blob_service = BlockBlobService(account_name='emojiverse2',
+        account_key='bsLnZdnBz5yppDuprvDNlnWNNLAFl4y6vcOiIz23NozQwLIqJQ12AYkqISdc/WyHVV4HYtGv+Y4b25q2JbmN5A==')
+
+    block_blob_service.set_container_acl('imgstore', 
+                                         public_access=PublicAccess.Container)
+
+    block_blob_service.create_blob_from_path(
+        'imgstore',
+        'img' + str(uuid.uuid4()) + '.png',
+        localPath,
+        content_settings=ContentSettings(content_type='image/png')
+    )
 
 # if __name__ == "__main__":
 #     main()
