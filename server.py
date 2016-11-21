@@ -30,9 +30,9 @@ def handle_verification():
 # Read more at: https://developers.facebook.com/docs/graph-api/webhooks
 @app.route('/', methods=['POST'])
 def handle_message():
-    print("Handling Messages")
+    # print("Handling Messages")
+    print "Handling Messages"
     payload = request.get_data()
-    # print(payload)
     for sender, imageurl in messaging_events(payload):
         print("Incoming from %s: %s" % (sender, imageurl))
         send_message(PAT, sender, imageurl)
