@@ -207,7 +207,7 @@ def pushToCloud(localPath, imgFormat):
     block_blob_service.set_container_acl('imgstore', 
                                          public_access=PublicAccess.Container)
 
-    cloudPath = 'img' + str(uuid.uuid4()) + '.' + imgFormat
+    cloudPath = 'img' + str(uuid.uuid4()).split('-')[0] + '.' + imgFormat
 
     block_blob_service.create_blob_from_path(
         'imgstore',
