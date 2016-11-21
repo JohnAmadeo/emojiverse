@@ -36,7 +36,7 @@ def handle_message():
     for sender, imageurl in messaging_events(payload):
         print "Incoming from %s: %s" % (sender, imageurl)
         emojiurl = emojify(imageurl) 
-        print "Retrieving emojified url"
+        print "Retrieving emojified url %s." % (emojiurl)
         sys.stdout.flush()
         send_message(PAT, sender, emojiurl)
 
