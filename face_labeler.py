@@ -213,7 +213,8 @@ def pushToCloud(localPath, imgFormat):
         'imgstore',
         cloudPath,
         localPath,
-        content_settings=ContentSettings(content_type='image/' + imgFormat)
+        content_settings=ContentSettings(content_type='image/' + imgFormat),
+        validate_content=False
     )
      
     return cloudPath
