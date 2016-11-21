@@ -129,10 +129,10 @@ def draw_emoji(urlImage, faceList):
         for c in range(0,3):
             img[yfrom:yto,xfrom:xto,c] = emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,c] * (emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,3]/255.0) + img[yfrom:yto,xfrom:xto,c] * (1.0 - emoji[yfrom_emj:yto_emj,xfrom_emj:xto_emj,3]/255.0)
 
-    cv2.imwrite('/tmp/result.png', img)
-    pushToCloud('/tmp/result.png')
+    cv2.imwrite('./tmp/result.png', img)
+    pushToCloud('./tmp/result.png')
 
-    return '/tmp/result.png'
+    return './tmp/result.png'
 
 # Helper functions
 def processImgRequest(json, url, data, headers, params):
