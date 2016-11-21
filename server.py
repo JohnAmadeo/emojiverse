@@ -88,7 +88,8 @@ def send_message(token, recipient, imageurl):
                 "attachment": {
                     "type":"image",
                     #"payload": { "url": imageurl}
-                    "payload": {"url": 'https://tctechcrunch2011.files.wordpress.com/2011/05/tcdisrupt_tc-9.jpg'}
+                    # "payload": {"url": 'https://tctechcrunch2011.files.wordpress.com/2011/05/tcdisrupt_tc-9.jpg'}
+                    "payload": {"url": 'https://emojiverse2.blob.core.windows.net/imgstore/img719e1182-6642-4737-8cb2-7e469e3c7bdc.jpg'}
                 }
             }
         }),
