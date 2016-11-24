@@ -48,9 +48,10 @@ def handle_message():
             attachment_list = event["message"]["attachments"]
             for attachment in attachment_list:
                 if attachment["type"] == "image":
+                    emojifiedurl = emojify(attachment['payload']['url'])
                     send_image(_fbAPIToken, 
                                recipient=event["sender"]["id"], 
-                               imageurl=attachment['payload']['url'])
+                               imageurl=emojifiedurl)
 
     # for sender, imageurl in messaging_events(payload):
     #     print "Incoming from %s: %s" % (sender, imageurl)
