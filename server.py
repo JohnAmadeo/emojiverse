@@ -48,6 +48,7 @@ def handle_message():
             attachment_list = event["message"]["attachments"]
             for attachment in attachment_list:
                 if attachment["type"] == "image":
+                    send_loading_screen(_fbAPIToken, event["sender"]["id"])
                     emojifiedurl = emojify(attachment['payload']['url'])
                     send_image(_fbAPIToken, 
                                recipient=event["sender"]["id"], 
@@ -63,7 +64,6 @@ def is_text(payload):
     else:
         return False
 
-# handle incoming messages from users
 def messaging_events(payload):
     """
     Generate tuples of (sender_id, message_text) from the provided payload.
@@ -77,7 +77,6 @@ def messaging_events(payload):
     for event in messaging_events:
         yield event
 
-# return a response to FB 
 def send_image(token, recipient, imageurl):
     """
     Send the emojified image at imageurl to the recipient with id recipient.
@@ -102,6 +101,9 @@ def send_image(token, recipient, imageurl):
     if r.status_code != requests.codes.ok:
         print(r.text)
         sys.stdout.flush()
+    else:
+        print('Failed to send emojified image')
+        sys.stdout.flush()
 
 def greet_user(token, recipient): 
     """Send user a greeting/explanation for how to use the app
@@ -125,6 +127,33 @@ def greet_user(token, recipient):
         print("Failed to greet user")
         sys.stdout.flush()
         exit()
+
+def send_loading_screen(token, recipient):
+    """Send loading screen GIF to user while waiting for emojification
+    to finish
+    """    
+
+    gifurl='https://dl.dropboxusercontent.com/s/9mvr9lfl856mixr/loading.gif?dl=0'
+
+    r = requests.post("https://graph.facebook.com/v2.6/me/messages",
+        params = {"access_token": token},
+        data=json.dumps({
+            "recipient": {"id": recipient},
+            "message": {
+                "attachment": {
+                    "type":"image",
+                    "payload": { "url": gifurl}
+                }
+            }
+        }),
+        headers={'Content-type': 'application/json'})
+
+    if r.status_code != requests.codes.ok:
+        print(r.text)
+        sys.stdout.flush()
+    else:
+        print('Failed to send loading screen GIF')
+        sys.stdout.flush()
 
 if __name__ == "__main__":
     app.run()
