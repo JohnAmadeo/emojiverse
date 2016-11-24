@@ -118,9 +118,7 @@ def send_image(token, recipient, imageurl):
         sys.stdout.flush()
 
 def greet_user(token, recipient): 
-    greeting = """Emojiverse takes in any image you send to it and 
-        emojifies it by replacing people's faces in the image with an 
-        emoji showing the same emotion! """
+    greeting = "Hi! Welcome to the Emojiverse! Any image that you send to the Emojiverse is, well, emojified. That means you'll get an image where any person seen in the image will have their face replaced with an emoji expressing the same emotion. Have fun!"
 
     r = requests.post("https://graph.facebook.com/v2.6/me/messages",
         params= {"access_token": token},
