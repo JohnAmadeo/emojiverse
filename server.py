@@ -28,7 +28,6 @@ def handle_verification():
         print("Verification failed!")
         return 'Error, wrong validation token'
 
-
 @app.route('/', methods=['POST'])
 def handle_message():
     """
@@ -37,19 +36,41 @@ def handle_message():
     in the form specified by the Facebook Graph API.
     More at: https://developers.facebook.com/docs/graph-api/webhooks
     """
+    greet_user(_fbAPIToken)
+
     print "Handling Messages"
     sys.stdout.flush()
     payload = request.get_data()
-    for sender, imageurl in messaging_events(payload):
-        print "Incoming from %s: %s" % (sender, imageurl)
-        sys.stdout.flush()
 
-        emojifiedurl = emojify(imageurl) 
-        print "Retrieving emojified url %s." % (emojifiedurl)
-        sys.stdout.flush()
-        send_message(_fbAPIToken, sender, emojifiedurl)
+    for event in messaging_events(payload):
+        if "text" in event["message"]:
+            greet_user(_fbAPIToken, event["sender"]["id"])
+        else if "attachments" in event["message"]:
+            attachment_list = event["message"]["attachments"]
+            for attachment in attachment_list:
+                if attachment["type"] == "image":
+                    send_image(_fbAPIToken, 
+                               recipient=event["sender"]["id"], 
+                               imageurl=attachment['payload']['url'])
+
+    # for sender, imageurl in messaging_events(payload):
+    #     print "Incoming from %s: %s" % (sender, imageurl)
+    #     sys.stdout.flush()
+
+    #     emojifiedurl = emojify(imageurl) 
+    #     print "Retrieving emojified url %s." % (emojifiedurl)
+    #     sys.stdout.flush()
+    #     send_image(_fbAPIToken, sender, emojifiedurl)
 
     return "ok"
+
+def is_text(payload):
+    data = json.loads(payload)
+    event = data['entry'][0]['messaging'][0]
+    if "text" in event['message']:
+        return True
+    else:
+        return False
 
 # handle incoming messages from users
 def messaging_events(payload):
@@ -63,13 +84,15 @@ def messaging_events(payload):
     # extract image URL for further processing if message is an image
     messaging_events = data['entry'][0]['messaging']
     for event in messaging_events:
-        if "attachments" in event["message"]:
-            attachments = event["message"]["attachments"]
-            for item in attachments:
-                yield event["sender"]["id"], item['payload']['url']
+        yield event
+        
+        # if "attachments" in event["message"]:
+        #     attachments = event["message"]["attachments"]
+        #     for item in attachments:
+        #         yield event["sender"]["id"], item['payload']['url']
 
 # return a response to FB 
-def send_message(token, recipient, imageurl):
+def send_image(token, recipient, imageurl):
     """
     Send the emojified image at imageurl to the recipient with id recipient.
     """
@@ -93,6 +116,29 @@ def send_message(token, recipient, imageurl):
     if r.status_code != requests.codes.ok:
         print(r.text)
         sys.stdout.flush()
+
+def greet_user(token, recipient): 
+    greeting = """Emojiverse takes in any image you send to it and 
+        emojifies it by replacing people's faces in the image with an 
+        emoji showing the same emotion! """
+
+    r = requests.post("https://graph.facebook.com/v2.6/me/messages",
+        params= {"access_token": token},
+        headers={'Content-Type' : "application/json"}
+        data=json.dumps({
+            "recipient": {"id": recipient},
+            "message": {
+                "text": greeting
+            }
+        }))
+
+    if r.status_code == 200:
+        print(r.text)
+        sys.stdout.flush()
+    else:
+        print("Failed to greet user")
+        sys.stdout.flush()
+        exit()
 
 if __name__ == "__main__":
     app.run()
