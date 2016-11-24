@@ -3,18 +3,23 @@ import json
 import requests
 import sys
 from face_labeler import emojify
+import os
 
 app = Flask(__name__)
 
 # page access token generated on FB developers website
-PAT = 'EAACYCiTBaaQBAJjjFJgiie5dTnPyFaXxED16afYeIrAMxHGQqENJOtY0ycsYpdfM7jZCgRb53iVDaMSZAwGrfKC7p7i0ahZBEWcURybNeaC6ZAI1ZAmGAzv1aJys0EaZAkGdf5EcrwyGGwJo9FvzsZAo5AWyt5NHKwodb2g78VyswZDZD'
+# PAT = 'EAACYCiTBaaQBAJjjFJgiie5dTnPyFaXxED16afYeIrAMxHGQqENJOtY0ycsYpdfM7jZCgRb53iVDaMSZAwGrfKC7p7i0ahZBEWcURybNeaC6ZAI1ZAmGAzv1aJys0EaZAkGdf5EcrwyGGwJo9FvzsZAo5AWyt5NHKwodb2g78VyswZDZD'
+_fbAPIToken = os.environ['FB_GRAPH_API_TOKEN']
 
-# From https://developers.facebook.com/docs/graph-api/webhooks:
-# "When you add a new subscription, or modify an existing one, 
-# Facebook servers will make a GET request to your callback URL 
-# in order to verify the validity of the callback server.""
+
 @app.route('/', methods=['GET'])
 def handle_verification():
+    """
+    From https://developers.facebook.com/docs/graph-api/webhooks:
+    "When you add a new subscription, or modify an existing one, 
+    Facebook servers will make a GET request to your callback URL 
+    in order to verify the validity of the callback server.""
+    """
     print("Handling Verification.")
     # verification token agreed specified on FB developers website
     if request.args.get('hub.verify_token', default='') == 'my_voice_is_my_password_verify_me':
@@ -24,12 +29,15 @@ def handle_verification():
         print("Verification failed!")
         return 'Error, wrong validation token'
 
-# When a user sends a message to a bot, FB makes a POST request that contains
-# information on what the user sent to our bot. The JSON object sent to us is 
-# in the form specified by the Facebook Graph API.
-# Read more at: https://developers.facebook.com/docs/graph-api/webhooks
+
 @app.route('/', methods=['POST'])
 def handle_message():
+    """
+    When a user sends a message to a bot, FB makes a POST request that contains
+    information on what the user sent to our bot. The JSON object sent to us is 
+    in the form specified by the Facebook Graph API.
+    More at: https://developers.facebook.com/docs/graph-api/webhooks
+    """
     print "Handling Messages"
     sys.stdout.flush()
     payload = request.get_data()
@@ -40,7 +48,7 @@ def handle_message():
         emojifiedurl = emojify(imageurl) 
         print "Retrieving emojified url %s." % (emojifiedurl)
         sys.stdout.flush()
-        send_message(PAT, sender, emojifiedurl)
+        send_message(_fbAPIToken, sender, emojifiedurl)
 
     return "ok"
 
@@ -59,25 +67,13 @@ def messaging_events(payload):
         if "attachments" in event["message"]:
             attachments = event["message"]["attachments"]
             for item in attachments:
-                # print(item['payload']['url'])
                 yield event["sender"]["id"], item['payload']['url']
-
-        # if "message" in event and "text" in event["message"]:
-        #     yield event["sender"]["id"], event["message"]["text"].encode('unicode_escape')
 
 # return a response to FB 
 def send_message(token, recipient, imageurl):
     """
-    Send the message text to recipient with id recipient.
+    Send the emojified image at imageurl to the recipient with id recipient.
     """
-
-    # r = requests.post("https://graph.facebook.com/v2.6/me/messages",
-    #     params = {"access_token": token},
-    #     data=json.dumps({
-    #         "recipient": {"id": recipient},
-    #         "message": {"text": imageurl.decode('unicode_escape')}
-    #     }),
-    #     headers={'Content-type': 'application/json'})
 
     print "url w/ decode: %s." % imageurl.decode('unicode_escape')
     sys.stdout.flush()
@@ -90,8 +86,6 @@ def send_message(token, recipient, imageurl):
                 "attachment": {
                     "type":"image",
                     "payload": { "url": imageurl}
-                    # "payload": {"url": 'https://tctechcrunch2011.files.wordpress.com/2011/05/tcdisrupt_tc-9.jpg'}
-                    # "payload": {"url": 'https://emojiverse2.blob.core.windows.net/imgstore/img019f73a6-6af6-4374-b8ac-95c7bc99511a.jpeg'}
                 }
             }
         }),
