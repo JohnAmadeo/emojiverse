@@ -8,7 +8,6 @@ import os
 app = Flask(__name__)
 
 # page access token generated on FB developers website
-# PAT = 'EAACYCiTBaaQBAJjjFJgiie5dTnPyFaXxED16afYeIrAMxHGQqENJOtY0ycsYpdfM7jZCgRb53iVDaMSZAwGrfKC7p7i0ahZBEWcURybNeaC6ZAI1ZAmGAzv1aJys0EaZAkGdf5EcrwyGGwJo9FvzsZAo5AWyt5NHKwodb2g78VyswZDZD'
 _fbAPIToken = os.environ['FB_GRAPH_API_TOKEN']
 
 
