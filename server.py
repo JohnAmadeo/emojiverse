@@ -40,7 +40,7 @@ def handle_message():
         emojifiedurl = emojify(imageurl) 
         print "Retrieving emojified url %s." % (emojifiedurl)
         sys.stdout.flush()
-        send_message(PAT, sender, emojiurl)
+        send_message(PAT, sender, emojifiedurl)
 
     return "ok"
 
