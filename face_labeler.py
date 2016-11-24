@@ -250,7 +250,7 @@ def uploadToDropbox(localPath):
         return True
     else:
         print("Failed to upload to Dropbox. Status code: %d" % (r.status_code))
-        print(r)
+        print(r.json())
         sys.stdout.flush() 
         return False
         # exit()
