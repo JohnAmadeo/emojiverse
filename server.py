@@ -132,8 +132,7 @@ def send_loading_screen(token, recipient):
     """Send loading screen GIF to user while waiting for emojification
     to finish
     """    
-
-    gifurl='https://dl.dropboxusercontent.com/s/9mvr9lfl856mixr/loading.gif?dl=0'
+    gifurl='https://dl.dropboxusercontent.com/s/hl43fk5wsairyml/loading.gif?dl=0'
 
     r = requests.post("https://graph.facebook.com/v2.6/me/messages",
         params = {"access_token": token},
