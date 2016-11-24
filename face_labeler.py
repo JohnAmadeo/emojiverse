@@ -32,8 +32,8 @@ _maxNumRetries = 10
 # generate random filename for emojified image in Dropbox folder
 _filename = str(uuid.uuid4()).split('-')[0] + '.jpg'
 
-def main():
-    emojify('http://s3.amazonaws.com/etntmedia/media/images/ext/543627202/happy-people-friends.jpg')
+# def main():
+#     emojify('http://s3.amazonaws.com/etntmedia/media/images/ext/543627202/happy-people-friends.jpg')
 
 def emojify(imageurl):
     """Emojifies (i.e replaces faces with emoji
@@ -284,5 +284,5 @@ def getImageDropboxUrl():
         sys.stdout.flush()
         exit()
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

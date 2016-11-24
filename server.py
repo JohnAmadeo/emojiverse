@@ -123,13 +123,13 @@ def greet_user(token, recipient):
 
     r = requests.post("https://graph.facebook.com/v2.6/me/messages",
         params= {"access_token": token},
-        headers={'Content-Type' : "application/json"}
+        headers={'Content-Type' : "application/json"},
         data=json.dumps({
             "recipient": {"id": recipient},
             "message": {
                 "text": greeting
-            }
-        }))
+            }})
+        )
 
     if r.status_code == 200:
         print(r.text)
