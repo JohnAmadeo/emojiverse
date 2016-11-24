@@ -44,7 +44,7 @@ def handle_message():
     for event in messaging_events(payload):
         if "text" in event["message"]:
             greet_user(_fbAPIToken, event["sender"]["id"])
-        else if "attachments" in event["message"]:
+        elif "attachments" in event["message"]:
             attachment_list = event["message"]["attachments"]
             for attachment in attachment_list:
                 if attachment["type"] == "image":
