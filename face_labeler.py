@@ -29,7 +29,7 @@ _filename = str(uuid.uuid4()).split('-')[0] + '.jpg'
 def emojify(urlImage):
     faceList = analyze_face(urlImage, 'prod')
     emojifiedurl = draw_emoji(urlImage, faceList)
-    print(emojifiedurl)
+    # print(emojifiedurl)
     return emojifiedurl
 
 def analyze_face(urlImage, mode):

@@ -35,6 +35,8 @@ def handle_message():
     payload = request.get_data()
     for sender, imageurl in messaging_events(payload):
         print "Incoming from %s: %s" % (sender, imageurl)
+        sys.stdout.flush()
+
         emojifiedurl = emojify(imageurl) 
         print "Retrieving emojified url %s." % (emojifiedurl)
         sys.stdout.flush()
