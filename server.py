@@ -36,7 +36,6 @@ def handle_message():
     in the form specified by the Facebook Graph API.
     More at: https://developers.facebook.com/docs/graph-api/webhooks
     """
-    greet_user(_fbAPIToken)
 
     print "Handling Messages"
     sys.stdout.flush()
@@ -85,7 +84,7 @@ def messaging_events(payload):
     messaging_events = data['entry'][0]['messaging']
     for event in messaging_events:
         yield event
-        
+
         # if "attachments" in event["message"]:
         #     attachments = event["message"]["attachments"]
         #     for item in attachments:
