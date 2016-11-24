@@ -143,7 +143,10 @@ def draw_emoji(urlImage, faceList):
 
     # upload image to Dropbox and retrieve link that FB Messenger 
     # can access
-    uploadToDropbox(tempPath)
+    while True:
+        if uploadToDropbox(tempPath): break
+        else: time.sleep(2)
+
     cloudPath = getImageDropboxUrl()
 
     return cloudPath
@@ -247,10 +250,12 @@ def uploadToDropbox(localPath):
     if r.status_code == 200: 
         print("Upload to Dropbox successful")
         sys.stdout.flush()
+        return True
     else:
         print("Failed to upload to Dropbox. Status code: %d" % (r.status_code))
         sys.stdout.flush() 
-        exit()
+        return False
+        # exit()
 
 def getImageDropboxUrl():
     """Get a URL to where the emojified image is hosted on Dropbox
