@@ -46,6 +46,9 @@ def handle_message():
             greet_user(_fbAPIToken, event["sender"]["id"])
         elif "attachments" in event["message"]:
             attachment_list = event["message"]["attachments"]
+            print(attachment_list)
+            sys.stdout.flush()
+            
             for attachment in attachment_list:
                 if attachment["type"] == "image":
                     send_loading_screen(_fbAPIToken, event["sender"]["id"])
@@ -101,6 +104,9 @@ def send_image(token, recipient, imageurl):
     if r.status_code != 200:
         print('Failed to send emojified image')
         sys.stdout.flush()
+    else:
+        print("Sent emojified image")
+        sys.stdout.flush()
 
 def greet_user(token, recipient): 
     """Send user a greeting/explanation for how to use the app
@@ -119,6 +125,9 @@ def greet_user(token, recipient):
 
     if r.status_code != 200:
         print("Failed to greet user")
+        sys.stdout.flush()
+    else:
+        print("Greeted user")
         sys.stdout.flush()
 
 def send_loading_screen(token, recipient):
@@ -142,6 +151,9 @@ def send_loading_screen(token, recipient):
 
     if r.status_code != 200:
         print('Failed to send loading screen GIF')
+        sys.stdout.flush()
+    else:
+        print('Sent loading screen GIF')
         sys.stdout.flush()
 
 if __name__ == "__main__":
