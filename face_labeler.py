@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 from get_emoji import get_emoji
-from azure.storage.blob import BlockBlobService
-from azure.storage.blob import PublicAccess
-from azure.storage.blob import ContentSettings
+import dropbox
 import time 
 import requests
 import cv2
@@ -13,6 +11,8 @@ import numpy as np
 import base64
 import time
 import uuid
+import json
+import sys
 
 # Variables
 _urlImgAPI = 'https://api.projectoxford.ai/emotion/v1.0/recognize'
@@ -20,18 +20,19 @@ _urlImgAPI = 'https://api.projectoxford.ai/emotion/v1.0/recognize'
 _imgKey = '56abb73c70d649c395df24fe8c5f0d01'
 # _vidKey = '6d733f1bc1e14010ac21969564926a56'
 _maxNumRetries = 10
-# _filename = 'user_image.png'
+# generate random filename
+_filename = str(uuid.uuid4()).split('-')[0] + '.jpg'
 _blobAddress = 'https://emojiverse2.blob.core.windows.net/imgstore/'
 block_blob_service = None
 
 def main():
-    emojify('https://scontent.xx.fbcdn.net/v/t35.0-12/15127522_10207695068084053_680510935_o.jpg?_nc_ad=z-m&oh=4373301dd2df31f5d20c0fbe4f98aac4&oe=58354252')
+    emojify('http://s3.amazonaws.com/etntmedia/media/images/ext/543627202/happy-people-friends.jpg')
 
 def emojify(urlImage):
-    # pushToCloud('./results/user_image.png', 'png')
     faceList = analyze_face(urlImage, 'prod')
-    filename = draw_emoji(urlImage, faceList)
-    return filename
+    emojifiedurl = draw_emoji(urlImage, faceList)
+    print(emojifiedurl)
+    return emojifiedurl
 
 def analyze_face(urlImage, mode):
     headers = dict()
@@ -129,10 +130,14 @@ def draw_emoji(urlImage, faceList):
 
     # cv2.imshow("asdf", img)
     # cv2.waitKey(0)
-    cv2.imwrite('/tmp/result.jpg', img)
-    cloudPath = pushToCloud('/tmp/result.jpg', 'jpg')
+    tempPath = '/tmp/result.jpg'
+    cv2.imwrite(tempPath, img)
 
-    return _blobAddress + cloudPath
+    if uploadToDropbox(tempPath) is True:
+        return getImageDropboxUrl()
+    else:
+        print("Failed to upload to Dropbox")
+        exit()
 
 # Helper functions
 def processImgRequest(json, url, data, headers, params):
@@ -199,26 +204,59 @@ def drawFace(result, img):
                                        cv2.FONT_HERSHEY_SIMPLEX,
                                        0.5, (255,0,0), 1)
 
-def pushToCloud(localPath, imgFormat):
-    global block_blob_service
-    block_blob_service = BlockBlobService(account_name='emojiverse2',
-        account_key='bsLnZdnBz5yppDuprvDNlnWNNLAFl4y6vcOiIz23NozQwLIqJQ12AYkqISdc/WyHVV4HYtGv+Y4b25q2JbmN5A==')
+def uploadToDropbox(localPath):
+    """Upload image at localPath to Dropbox folder
+    """
+    access_token = "Aj1lmASJYSwAAAAAAAAnLdLWt52qVuQPAu0HuOfH9UGsQoPF1f2_oggtEdKcVkFV"
+    url = "https://content.dropboxapi.com/2/files/upload"
 
-    block_blob_service.set_container_acl('imgstore', 
-                                         public_access=PublicAccess.Container)
+    headers = {
+        "Authorization": "Bearer " + access_token,
+        "Content-Type": "application/octet-stream",
+        "Dropbox-API-Arg": "{\"path\":\"/" + _filename + "\"}"
+    }
 
-    cloudPath = str(uuid.uuid4()).split('-')[0] + '.' + imgFormat
+    data = open(localPath, "rb").read()
 
-    block_blob_service.create_blob_from_path(
-        'imgstore',
-        cloudPath,
-        localPath,
-        content_settings=ContentSettings(content_type='image/' + imgFormat),
-        validate_content=False
-    )
-     
-    return cloudPath
+    r = requests.post(url, headers=headers, data=data)
 
+    if r: 
+        print("Upload succesful")
+        # sys.stdout.flush()
+        return True
+    else: 
+        return False
+
+def getImageDropboxUrl():
+    """Get a URL to where the emojified image is hosted on Dropbox
+    """
+    access_token = "Aj1lmASJYSwAAAAAAAAnLdLWt52qVuQPAu0HuOfH9UGsQoPF1f2_oggtEdKcVkFV"
+    url = "https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings"
+
+    headers = {
+        "Authorization": "Bearer " + access_token,
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "path": "/" + _filename,
+        "settings" : {
+            "requested_visibility": {
+                ".tag" : "public"
+            }
+        }
+    }
+
+    r = requests.post(url, headers=headers, data=json.dumps(data))
+
+    # print(r.json())
+    if r: 
+        idurl = (r.json())['url'].split('com')[1]
+        print("Shared link created")
+        return 'https://dl.dropboxusercontent.com' + idurl
+    else:
+        print("Failed to get Dropbox link to image")
+        exit()
 
 if __name__ == "__main__":
     main()
