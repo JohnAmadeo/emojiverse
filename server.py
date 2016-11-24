@@ -41,14 +41,15 @@ def handle_message():
     sys.stdout.flush()
     payload = request.get_data()
 
+    num_event = 0
     for event in messaging_events(payload):
+        print(event)
+        sys.stdout.flush()
+        num_event += 1;
         if "text" in event["message"]:
             greet_user(_fbAPIToken, event["sender"]["id"])
         elif "attachments" in event["message"]:
             attachment_list = event["message"]["attachments"]
-            print(attachment_list)
-            sys.stdout.flush()
-            
             for attachment in attachment_list:
                 if attachment["type"] == "image":
                     send_loading_screen(_fbAPIToken, event["sender"]["id"])
@@ -57,6 +58,9 @@ def handle_message():
                                recipient=event["sender"]["id"], 
                                imageurl=emojifiedurl)
 
+
+    print(num_event)
+    sys.stdout.flush()
     return "ok"
 
 def is_text(payload):
