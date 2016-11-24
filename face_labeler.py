@@ -248,7 +248,7 @@ def uploadToDropbox(localPath):
         print("Upload to Dropbox successful")
         sys.stdout.flush()
     else:
-        print("Failed to upload to Dropbox")
+        print("Failed to upload to Dropbox. Status code: %d" % (r.status_code))
         sys.stdout.flush() 
         exit()
 
