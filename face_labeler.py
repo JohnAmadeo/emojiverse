@@ -22,11 +22,9 @@ _imgKey = '56abb73c70d649c395df24fe8c5f0d01'
 _maxNumRetries = 10
 # generate random filename
 _filename = str(uuid.uuid4()).split('-')[0] + '.jpg'
-_blobAddress = 'https://emojiverse2.blob.core.windows.net/imgstore/'
-block_blob_service = None
 
-def main():
-    emojify('http://s3.amazonaws.com/etntmedia/media/images/ext/543627202/happy-people-friends.jpg')
+# def main():
+#     emojify('http://s3.amazonaws.com/etntmedia/media/images/ext/543627202/happy-people-friends.jpg')
 
 def emojify(urlImage):
     faceList = analyze_face(urlImage, 'prod')
@@ -133,11 +131,9 @@ def draw_emoji(urlImage, faceList):
     tempPath = '/tmp/result.jpg'
     cv2.imwrite(tempPath, img)
 
-    if uploadToDropbox(tempPath) is True:
-        return getImageDropboxUrl()
-    else:
-        print("Failed to upload to Dropbox")
-        exit()
+    uploadToDropbox(tempPath)
+    cloudPath = getImageDropboxUrl()
+    return cloudPath
 
 # Helper functions
 def processImgRequest(json, url, data, headers, params):
@@ -220,12 +216,13 @@ def uploadToDropbox(localPath):
 
     r = requests.post(url, headers=headers, data=data)
 
-    if r: 
-        print("Upload succesful")
-        # sys.stdout.flush()
-        return True
-    else: 
-        return False
+    if r.status_code == 200: 
+        print("Upload to Dropbox successful")
+        sys.stdout.flush()
+    else:
+        print("Failed to upload to Dropbox")
+        sys.stdout.flush() 
+        exit()
 
 def getImageDropboxUrl():
     """Get a URL to where the emojified image is hosted on Dropbox
@@ -249,14 +246,15 @@ def getImageDropboxUrl():
 
     r = requests.post(url, headers=headers, data=json.dumps(data))
 
-    # print(r.json())
-    if r: 
+    if r.status_code == 200: 
         idurl = (r.json())['url'].split('com')[1]
         print("Shared link created")
+        sys.stdout.flush()
         return 'https://dl.dropboxusercontent.com' + idurl
     else:
         print("Failed to get Dropbox link to image")
+        sys.stdout.flush()
         exit()
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
