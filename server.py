@@ -53,15 +53,6 @@ def handle_message():
                                recipient=event["sender"]["id"], 
                                imageurl=emojifiedurl)
 
-    # for sender, imageurl in messaging_events(payload):
-    #     print "Incoming from %s: %s" % (sender, imageurl)
-    #     sys.stdout.flush()
-
-    #     emojifiedurl = emojify(imageurl) 
-    #     print "Retrieving emojified url %s." % (emojifiedurl)
-    #     sys.stdout.flush()
-    #     send_image(_fbAPIToken, sender, emojifiedurl)
-
     return "ok"
 
 def is_text(payload):
@@ -81,15 +72,10 @@ def messaging_events(payload):
     # convert JSON to python object
     data = json.loads(payload)
 
-    # extract image URL for further processing if message is an image
+    # yields each message received via the POST request
     messaging_events = data['entry'][0]['messaging']
     for event in messaging_events:
         yield event
-
-        # if "attachments" in event["message"]:
-        #     attachments = event["message"]["attachments"]
-        #     for item in attachments:
-        #         yield event["sender"]["id"], item['payload']['url']
 
 # return a response to FB 
 def send_image(token, recipient, imageurl):
@@ -118,6 +104,8 @@ def send_image(token, recipient, imageurl):
         sys.stdout.flush()
 
 def greet_user(token, recipient): 
+    """Send user a greeting/explanation for how to use the app
+    """
     greeting = "Hi! Welcome to the Emojiverse! Any image that you send to the Emojiverse is, well, emojified. That means you'll get an image where any person seen in the image will have their face replaced with an emoji expressing the same emotion. Have fun!"
 
     r = requests.post("https://graph.facebook.com/v2.6/me/messages",
