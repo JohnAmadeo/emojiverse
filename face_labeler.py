@@ -29,8 +29,6 @@ _getlinkUrl = 'https://api.dropboxapi.com/2/sharing/create_shared_link_with_sett
 _dbxAPIToken = os.environ['DROPBOX_API_TOKEN']
 # No. of times program tries to call Emotion API before throwing error 
 _maxNumRetries = 10
-# generate random filename for emojified image in Dropbox folder
-# _filename = str(uuid.uuid4()).split('-')[0] + '.jpg'
 
 # def main():
 #     emojify('http://s3.amazonaws.com/etntmedia/media/images/ext/543627202/happy-people-friends.jpg')
@@ -234,6 +232,7 @@ def uploadToDropbox(localPath, filename):
 
     Args
     localPath: path to image stored on local machine
+    filename: filename of image on Dropbox folder
     """
     headers = {
         "Authorization": "Bearer " + _dbxAPIToken,
@@ -258,6 +257,9 @@ def uploadToDropbox(localPath, filename):
 
 def getImageDropboxUrl(filename):
     """Get a URL to where the emojified image is hosted on Dropbox
+
+    Args
+    filename: filename of image on Dropbox folder
 
     Return
     cloudurl: url to hosted image in Dropbox folder

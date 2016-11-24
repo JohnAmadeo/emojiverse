@@ -43,9 +43,6 @@ def handle_message():
 
     num_event = 0
     for event in messaging_events(payload):
-        print(event)
-        sys.stdout.flush()
-        num_event += 1;
         if "text" in event["message"]:
             greet_user(_fbAPIToken, event["sender"]["id"])
         elif "attachments" in event["message"]:
@@ -58,9 +55,6 @@ def handle_message():
                                recipient=event["sender"]["id"], 
                                imageurl=emojifiedurl)
 
-
-    print(num_event)
-    sys.stdout.flush()
     return "ok"
 
 def is_text(payload):
