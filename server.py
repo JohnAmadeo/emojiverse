@@ -98,10 +98,7 @@ def send_image(token, recipient, imageurl):
         }),
         headers={'Content-type': 'application/json'})
 
-    if r.status_code != requests.codes.ok:
-        print(r.text)
-        sys.stdout.flush()
-    else:
+    if r.status_code != 200:
         print('Failed to send emojified image')
         sys.stdout.flush()
 
@@ -120,13 +117,9 @@ def greet_user(token, recipient):
             }})
         )
 
-    if r.status_code == 200:
-        print(r.text)
-        sys.stdout.flush()
-    else:
+    if r.status_code != 200:
         print("Failed to greet user")
         sys.stdout.flush()
-        exit()
 
 def send_loading_screen(token, recipient):
     """Send loading screen GIF to user while waiting for emojification
@@ -147,10 +140,7 @@ def send_loading_screen(token, recipient):
         }),
         headers={'Content-type': 'application/json'})
 
-    if r.status_code != requests.codes.ok:
-        print(r.text)
-        sys.stdout.flush()
-    else:
+    if r.status_code != 200:
         print('Failed to send loading screen GIF')
         sys.stdout.flush()
 
