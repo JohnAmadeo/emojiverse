@@ -2,7 +2,6 @@
 A FB Messenger Bot that takes in an image, and replaces all the faces in the image with an emoji of the same expression! 
 
 Message 'Emojiverse' on Facebook Messenger to try it out! Or visit the page at https://www.facebook.com/emojiverse/
-(As of writing the bot is still under review)
 
 
 
